@@ -1,6 +1,6 @@
 # Simple_Calculator
 
-This is a basic calculator app developed help me experiement with Flutter. 
+This is a basic calculator app I developed to experiement with Flutter. 
 
 Note: 
    I based the app on the following useful commit by Samarth Agarwal:
