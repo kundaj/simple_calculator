@@ -6,20 +6,85 @@ class Calculator extends StatefulWidget {
 }
 
 class CalculatorState extends State<Calculator> {
-  String _display = "0";
-  double _result = 0.000000;
+  String display = ""; //Store and display equation
+  double result = 0.0; //Store and display result
 
-  String _op = "";
-  double _input1 = 0.0;
-  double _input2 = 0.0;
+  String op = "";
+  String lastToken = ""; //Keep track of the last button to be pressed
+  double input1 = 0.0;
+  double input2 = 0.0;
 
   void init() {
-    _display = "";
-    _result = 0.0;
-    _op = "";
+    setState(() {
+      display = "";
+      result = 0.0;
+      op = "";
+      input1 = 0.0;
+      input2 = 0.0;
+      lastToken = "";
+    });
   }
 
-  void _calculate(String input) {}
+  void _calculate(String _token) {
+    List<String> _operators = ["x", "+", "/", "-"];
+
+    if (_token == "CLEAR") {
+      init();
+    } else if (_operators.contains(_token)) {
+      // Do not enter any operator if the display is null
+      if (display == "") return;
+
+      input1 = result;
+      setState(() {
+        op = _token;
+
+        if (!_operators
+            .contains(lastToken)) // If last pressed button is not operator
+          display = display + _token;
+        else
+        {
+          int lastIndex = display.length - 1;
+          display = display.replaceRange(lastIndex, lastIndex,
+              _token); // Replace operator with new one
+        }
+        lastToken = _token;
+      });
+    } else if (_token == ".") {
+      if (result.toString().contains(".")) {
+        print("Result already contains .");
+        return;
+      } else {
+        display = display + _token;
+      }
+    } else if (_token == "=") {
+      input2 = result;
+
+      switch (op) {
+        case "+":
+          result = input1 + input2;
+          break;
+        case "-":
+          result = input1 - input2;
+          break;
+        case "/":
+          result = input1 / input2;
+          break;
+        case "x":
+          result = input1 * input2;
+          break;
+        default:
+      }
+
+      input1 = 0.0;
+      input2 = 0.0;
+      op = "";
+    } else {
+      setState(() {
+        display = display + _token;
+        lastToken = _token;
+      });
+    }
+  }
 
   Widget _buttons(String _input) {
     return new Expanded(
@@ -48,7 +113,7 @@ class CalculatorState extends State<Calculator> {
                 decoration: new BoxDecoration(color: Colors.red[200]),
                 padding: new EdgeInsets.all(35.0),
                 child: new Text(
-                  _display,
+                  display,
                   style: TextStyle(
                     fontSize: 40.0,
                     fontWeight: FontWeight.bold,
@@ -59,7 +124,7 @@ class CalculatorState extends State<Calculator> {
                 decoration: new BoxDecoration(color: Colors.red[300]),
                 padding: new EdgeInsets.all(25.0),
                 child: new Text(
-                  _result.toStringAsFixed(2),
+                  result.toString(),
                   style: TextStyle(
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
